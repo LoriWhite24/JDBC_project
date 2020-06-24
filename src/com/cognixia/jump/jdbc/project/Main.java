@@ -12,6 +12,19 @@ public class Main {
 			System.out.println(dept);
 		}
 		
+
+			
+		StudentDAO studentDao = new StudentDAOImp();
+
+		System.out.println("Get all students");
+
+		for( Student student : studentDao.getAllStudents() ) {
+			System.out.println(student);
+
+		}
+		
+		
+		
 //		Department newDept = new Department(0, "Film", "1234567800");
 //		
 //		boolean added = deptDao.addDepartment(newDept);
