@@ -1,74 +1,53 @@
 package com.cognixia.jump.jdbc.project;
 
+import java.util.Scanner;
+
 public class Main {
 	
 	public static void main(String[] args) {
 		
-		DepartmentDAO deptDao = new DepartmentDAOImp();
-		
-		System.out.println("Get all departments");
-		
-		for( Department dept : deptDao.getAllDepartments() ) {
-			System.out.println(dept);
-		}
-		
-
-			
 		StudentDAO studentDao = new StudentDAOImp();
+		
+		char answer;
+		Scanner in = new Scanner(System.in);
+		
+		do {
+			int choice = 0;
+			do {
+				System.out.println("How would you like to manage students?"
+						+ "\n1: Retrieve all students"
+						+ "\n2: Retrieve student by ID"
+						+ "\n3: Update student information"
+						+ "\n4: Delete Student"
+						+ "\n5: Add new student");
+				choice = Integer.parseInt(in.nextLine().trim());
+			}while(choice > 5 || choice < 1);
+			
 
-		System.out.println("Get all students");
+			switch(choice) {
+				case 1:
+					System.out.println("STUDENTS\n--------------------------");
+					studentDao.getAllStudents().stream().forEach(System.out::println);
+					break;
+				case 2:
+					System.out.println("Please enter a Student ID:\n");
+					int id = Integer.parseInt(in.nextLine().trim());
 
-		for( Student student : studentDao.getAllStudents() ) {
-			System.out.println(student);
-
-		}
-		
-		
-		
-//		Department newDept = new Department(0, "Film", "1234567800");
-//		
-//		boolean added = deptDao.addDepartment(newDept);
-//		
-//		if(added) {
-//			System.out.println("Added new department");
-//		}
-		
-//		Department toUpdate = deptDao.getAllDepartments().get(0);
-//		
-//		toUpdate.setPhone("2121212121");
-//		toUpdate.setName("Accounting");
-//		
-//		boolean updated = deptDao.updateDepartment(toUpdate);
-//		
-//		if(updated) {
-//			System.out.println("Updated department");
-//		}
-		
-		
-//		boolean updated = deptDao.updateDepartmentName(10019, "Film Studies");
-//		
-//		if(updated) {
-//			System.out.println("Updated department");
-//		}
-		
-		
-//		Department dept = deptDao.getDepartmentByID(10000);
-//		
-//		System.out.println("\nDepartment grabbed: " + dept);
-//		
-//		Department dept2 = deptDao.getDepartmentByName("Film Studies");
-//		
-//		System.out.println("\nDepartment grabbed: " + dept2);
-		
-		
-		boolean deleted = deptDao.deleteDepartment(10020);
-		
-		if(deleted) {
-			System.out.println("department deleted");
-		}
-		
-		
-		
+					System.out.println("Retrieve student by ID\n--------------------------");
+					Student student = studentDao.getStudentById(id);
+					System.out.println(student);
+					break;
+				case 3:
+					System.out.println("Update student information\n--------------------------");
+					break;
+				case 4:
+					System.out.println("SENIOR\n--------------------------");
+					break;
+			}
+			System.out.println("Do you wish to continue then type y: ");
+			answer = in.nextLine().trim().toLowerCase().charAt(0);
+		}while(answer == 'y');
+		in.close();
+		System.out.println("Bye.");
 	}
-
 }
