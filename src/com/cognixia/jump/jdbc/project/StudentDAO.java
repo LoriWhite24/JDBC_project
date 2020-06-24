@@ -6,7 +6,7 @@ public interface StudentDAO {
 
 	public List<Student> getAllStudents();
 	
-	public Student getStudentById();
+	public Student getStudentById(int id);
 	
 	public boolean addStudent(Student student);
 	
