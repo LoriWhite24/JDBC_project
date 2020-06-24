@@ -8,46 +8,55 @@ public class Main {
 		
 		StudentDAO studentDao = new StudentDAOImp();
 		
-		char answer;
+		int choice = 0;
 		Scanner in = new Scanner(System.in);
 		
-		do {
-			int choice = 0;
+		do {			
 			do {
 				System.out.println("How would you like to manage students?"
-						+ "\n1: Retrieve all students"
-						+ "\n2: Retrieve student by ID"
-						+ "\n3: Update student information"
-						+ "\n4: Delete Student"
-						+ "\n5: Add new student");
+						+ "\n1: Retrieve all the Students"
+						+ "\n2: Retrieve a Student by their ID"
+						+ "\n3: Update a Student's information"
+						+ "\n4: Delete a Student"
+						+ "\n5: Add a new Student"
+						+ "\n0: Quit");
 				choice = Integer.parseInt(in.nextLine().trim());
-			}while(choice > 5 || choice < 1);
+			}while(choice > 5 || choice < 0);
 			
+			Student student = null;
 
 			switch(choice) {
 				case 1:
 					System.out.println("STUDENTS\n--------------------------");
-					studentDao.getAllStudents().stream().forEach(System.out::println);
+					studentDao.getAllStudents().forEach(System.out::println);
 					break;
 				case 2:
-					System.out.println("Please enter a Student ID:\n");
-					int id = Integer.parseInt(in.nextLine().trim());
-
-					System.out.println("Retrieve student by ID\n--------------------------");
-					Student student = studentDao.getStudentById(id);
+					do {
+						System.out.println("Please enter a Student ID:\n");
+						int id = Integer.parseInt(in.nextLine().trim());
+						
+						student = studentDao.getStudentById(id);
+						if(student == null) {
+							System.out.println("There isn't a student with ID " + id + ".");
+						}
+					}while(student == null);
+					System.out.println("STUDENT\n--------------------------");
 					System.out.println(student);
 					break;
 				case 3:
-					System.out.println("Update student information\n--------------------------");
+					System.out.println("Update a Student's information\n--------------------------");
 					break;
 				case 4:
-					System.out.println("SENIOR\n--------------------------");
+					System.out.println("Delete a Student\n--------------------------");
+					break;
+				case 5:
+					System.out.println("Add a new Student\n--------------------------");
+					break;
+				default:
+					System.out.println("Bye.");
 					break;
 			}
-			System.out.println("Do you wish to continue then type y: ");
-			answer = in.nextLine().trim().toLowerCase().charAt(0);
-		}while(answer == 'y');
+		}while(choice == 0);
 		in.close();
-		System.out.println("Bye.");
 	}
 }
