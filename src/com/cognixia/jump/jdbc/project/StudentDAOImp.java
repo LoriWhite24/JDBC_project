@@ -1,6 +1,7 @@
 package com.cognixia.jump.jdbc.project;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,6 +62,38 @@ public class StudentDAOImp implements StudentDAO {
 		
 	}
 
+	public Student getStudent(String firstName, String lastName, String gender, Date dob, int credits) {
+
+		Student student = null;
+
+		// select * from student where student_id = ?
+		try(PreparedStatement pstmt = conn.prepareStatement("select * from student where first_name = ? and last_name = ? and gender = ? and date_of_birth = ? and credits = ?")) {
+
+			pstmt.setString(1, firstName);
+			pstmt.setString(2, lastName);
+			pstmt.setString(3, gender);
+			pstmt.setDate(4, dob);
+			pstmt.setInt(5, credits);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if(rs.next()) {
+
+				student = new Student(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getDate(5), rs.getInt(6), addDAO.getAddressById(rs.getInt(7)), depDAO.getDepartmentByID(rs.getInt(8)));
+
+			}
+
+			pstmt.close();
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+
+		return student;
+		
+	}
+	
 	@Override
 	public Student addStudent(Student student) {
 		
@@ -82,6 +115,7 @@ public class StudentDAOImp implements StudentDAO {
 			int insert = pstmt.executeUpdate();
 			
 			if(insert > 0) {
+				student = getStudent(student.getFirstName(), student.getLastName(), student.getGender(), student.getDob(), student.getCredits());
 				return student;
 			}
 		
@@ -128,17 +162,16 @@ public class StudentDAOImp implements StudentDAO {
 
 	@Override
 	public boolean deleteStudent(int id) {
-
-
-		try(PreparedStatement pstmt = conn.prepareStatement("delete from student where student_id = ?")) {
+		
+		boolean del = false;
+		try(PreparedStatement pstmt = conn.prepareStatement("delete from registration where student_id = ?")) {
 
 			pstmt.setInt(1, id);
 
 			int deleted = pstmt.executeUpdate();
 
 			if(deleted > 0) {
-				
-				return true;
+				del = true;
 			}
 			pstmt.close();
 			
@@ -146,6 +179,26 @@ public class StudentDAOImp implements StudentDAO {
 			
 			e.printStackTrace();
 		}
+
+		if(del) {
+			try(PreparedStatement pstmt = conn.prepareStatement("delete from student where student_id = ?")) {
+
+				pstmt.setInt(1, id);
+
+				int deleted = pstmt.executeUpdate();
+
+				if(deleted > 0) {
+					
+					return true;
+				}
+				pstmt.close();
+				
+			} catch(SQLException e) {
+				
+				e.printStackTrace();
+			}
+		}
+		
 
 		return false;
 	}
