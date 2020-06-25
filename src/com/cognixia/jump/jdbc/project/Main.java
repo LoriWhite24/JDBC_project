@@ -1,9 +1,12 @@
 package com.cognixia.jump.jdbc.project;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.cognixia.jump.jdbc.project.StudentInfo.Standing;
 
 public class Main {
 	
@@ -22,13 +25,16 @@ public class Main {
 				System.out.println("\nHow would you like to manage students?"
 						+ "\n1: Retrieve all the Students"
 						+ "\n2: Retrieve a Student by their ID"
-						+ "\n3: Update a Student's information"
-						+ "\n4: Delete a Student"
-						+ "\n5: Add a new Student"
+						+ "\n3: Retrieve all the Students within a Department"
+						+ "\n4: Retrieve all the Students with a certian Standing"
+						+ "\n5: Update a Student's information"
+						+ "\n6: Delete a Student"
+						+ "\n7: Add a new Student"
 						+ "\n0: Quit");
 				choice = Integer.parseInt(in.nextLine().trim());
-			}while(choice > 5 || choice < 0);
+			}while(choice > 7 || choice < 0);
 			
+			List<Student> std = null;
 			Student student = null;
 			Address a = null;
 			Department dep = null;
@@ -39,7 +45,9 @@ public class Main {
 			switch(choice) {
 				case 1:
 					System.out.println("\nSTUDENTS\n--------------------------");
-					studentDao.getAllStudents().forEach(System.out::println);
+					std = studentDao.getAllStudents();
+					std.forEach(System.out::println);
+					System.out.println("\nTotal: " + std.size());
 					break;
 				case 2:
 					do {
@@ -55,6 +63,66 @@ public class Main {
 					System.out.println(student);
 					break;
 				case 3:
+					do {
+						System.out.println("Please enter a Department Name:");
+						name = in.nextLine().trim();
+						
+						dep = departmenetDao.getDepartmentByName(name);
+						if(dep == null) {
+							System.out.println("There isn't a Department with the name" + name + ".");
+						}
+					}while(dep == null);
+					System.out.println("\nSTUDENTS IN DEPARTMENT " + name.toUpperCase() + "\n--------------------------");
+					std = studentDao.getStudentByDeptName(name);
+					std.forEach(System.out::println);
+					System.out.println("\nTotal: " + std.size());
+					break;
+				case 4:
+					int stChoice = 0;
+					do {
+						do {
+							System.out.println("Which class standing would you like to view? "
+									+ "\n1: Freshman"
+									+ "\n2: Sophmore"
+									+ "\n3: Junior"
+									+ "\n4: Senior"
+									+ "\n5: Super Senior"
+									+ "\n6: Advanced Senior"
+									+ "\n0: Quit");
+							stChoice = Integer.parseInt(in.nextLine().trim());
+						}while(stChoice > 6 || stChoice < 0);
+
+							switch(stChoice) {
+							case 1:
+								System.out.println("FRESHMAN\n--------------------------");
+								std = studentDao.getStudentByStanding(Standing.FRESHMAN);
+								break;
+							case 2:
+								System.out.println("SOPHOMORE\n--------------------------");
+								std = studentDao.getStudentByStanding(Standing.SOPHMORE);
+								break;
+							case 3:
+								System.out.println("JUNIOR\n--------------------------");
+								std = studentDao.getStudentByStanding(Standing.JUNIOR);
+								break;
+							case 4:
+								System.out.println("SENIOR\n--------------------------");
+								std = studentDao.getStudentByStanding(Standing.SENIOR);
+								break;
+							case 5:
+								System.out.println("SENIOR\n--------------------------");
+								std = studentDao.getStudentByStanding(Standing.SUPER_SENIOR);
+								break;
+							case 6:
+								System.out.println("SENIOR\n--------------------------");
+								std = studentDao.getStudentByStanding(Standing.ADVANCED_SENIOR);
+								break;
+							}
+							std.forEach(System.out::println);
+							System.out.println("\nTotal: " + std.size());
+						}while(stChoice != 0);
+					break;
+				case 5:
 					System.out.println("\nUpdate a Student's information\n--------------------------");
 					do {
 						System.out.println("Please enter a Student ID:");
@@ -200,7 +268,7 @@ public class Main {
 						System.out.println("Student was not able to be updated.");
 					}
 					break;
-				case 4:
+				case 6:
 					System.out.println("\nDelete a Student\n--------------------------");
 					boolean deleted;
 					do {
@@ -217,7 +285,7 @@ public class Main {
 						}
 					}while(student == null && !deleted);					
 					break;
-				case 5:
+				case 7:
 					System.out.println("\nAdd a new Student\n--------------------------");
 					sChoice = 0;
 					

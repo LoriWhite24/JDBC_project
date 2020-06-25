@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cognixia.jump.jdbc.project.StudentInfo.Standing;
+
 public class StudentDAOImp implements StudentDAO {
 
 	private Connection conn = ConnectionManagerProperties.getConnection();
@@ -62,6 +64,52 @@ public class StudentDAOImp implements StudentDAO {
 		
 	}
 
+	@Override
+	public List<Student> getStudentByDeptName(String name) {
+		List<Student> studentList = new ArrayList<Student>();
+		
+		Department dept = depDAO.getDepartmentByName(name);
+		
+		try(PreparedStatement pstmt = conn.prepareStatement("select * from student where dept_id = ?")) { 
+			
+			pstmt.setInt(1,  dept.getId());
+			
+			ResultSet rs = pstmt.executeQuery(); 
+			
+			while(rs.next()) {
+				// add to list
+				studentList.add(new Student(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getDate(5), rs.getInt(6), addDAO.getAddressById(rs.getInt(7)), depDAO.getDepartmentByID(rs.getInt(8))));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return studentList;
+	}
+
+	@Override
+	public List<Student> getStudentByStanding(Standing standing) {
+		List<Student> studentList = new ArrayList<Student>();
+		
+		try(PreparedStatement pstmt = conn.prepareStatement("select * from student where credits between ? and ?")) { 
+			
+			pstmt.setInt(1, standing.minCredits);
+			pstmt.setInt(2, standing.maxCredits);
+			
+			ResultSet rs = pstmt.executeQuery(); 
+			
+			while(rs.next()) {
+				// add to list
+				studentList.add(new Student(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getDate(5), rs.getInt(6), addDAO.getAddressById(rs.getInt(7)), depDAO.getDepartmentByID(rs.getInt(8))));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return studentList;
+	}
+
+	@Override
 	public Student getStudent(String firstName, String lastName, String gender, Date dob, int credits) {
 
 		Student student = null;
