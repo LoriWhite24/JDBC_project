@@ -8,7 +8,7 @@ public interface StudentDAO {
 	
 	public Student getStudentById(int id);
 	
-	public boolean addStudent(Student student);
+	public Student addStudent(Student student);
 	
 	public boolean updateStudent(Student student);
 	

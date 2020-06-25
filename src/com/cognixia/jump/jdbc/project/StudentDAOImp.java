@@ -62,7 +62,7 @@ public class StudentDAOImp implements StudentDAO {
 	}
 
 	@Override
-	public boolean addStudent(Student student) {
+	public Student addStudent(Student student) {
 		
 		// insert into student values(id, fname, lname, gender, dob, credits, addr_id, dept_id);
 		
@@ -82,7 +82,7 @@ public class StudentDAOImp implements StudentDAO {
 			int insert = pstmt.executeUpdate();
 			
 			if(insert > 0) {
-				return true;
+				return student;
 			}
 		
 		
@@ -93,7 +93,7 @@ public class StudentDAOImp implements StudentDAO {
 		e.printStackTrace();
 	}
 		
-		return false;
+		return null;
 	}
 
 	@Override
@@ -109,6 +109,7 @@ public class StudentDAOImp implements StudentDAO {
 			pstmt.setInt(5, student.getCredits());
 			pstmt.setInt(6, student.getAddress().getId());
 			pstmt.setInt(7, student.getDept().getId());
+			pstmt.setInt(8, student.getId());
 
 			int updated = pstmt.executeUpdate();
 

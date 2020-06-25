@@ -106,7 +106,7 @@ public class DepartmentDAOImp implements DepartmentDAO {
 	}
 
 	@Override
-	public boolean addDepartment(Department dept) {
+	public Department addDepartment(Department dept) {
 		
 		try {
 			PreparedStatement pstmt = conn.prepareStatement("insert into department values(?,?,?)");
@@ -118,7 +118,8 @@ public class DepartmentDAOImp implements DepartmentDAO {
 			int insert = pstmt.executeUpdate();
 			
 			if(insert > 0) {
-				return true;
+				dept = getDepartmentByName(dept.getName());
+				return dept;
 			}
 			
 			pstmt.close();
@@ -129,7 +130,7 @@ public class DepartmentDAOImp implements DepartmentDAO {
 		}
 		
 		
-		return false;
+		return null;
 	}
 
 	@Override

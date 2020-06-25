@@ -10,7 +10,7 @@ public interface DepartmentDAO {
 	
 	public Department getDepartmentByName(String name);
 	
-	public boolean addDepartment(Department dept);
+	public Department addDepartment(Department dept);
 	
 	public boolean deleteDepartment(int id);
 	
