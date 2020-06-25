@@ -146,34 +146,38 @@ public class StudentDAOImp implements StudentDAO {
 	public Student addStudent(Student student) {
 		
 		// insert into student values(id, fname, lname, gender, dob, credits, addr_id, dept_id);
-		
-		try {
-			PreparedStatement pstmt = conn.prepareStatement("insert into student values(?,?,?,?,?,?,?,?)");
-			
-			pstmt.setInt(1, student.getId());
-			pstmt.setString(2, student.getFirstName());
-			pstmt.setString(3, student.getLastName());
-			pstmt.setString(4, student.getGender());
-			pstmt.setDate(5, student.getDob());
-			pstmt.setInt(6, student.getCredits());
-			pstmt.setInt(7, student.getAddress().getId());
-			pstmt.setInt(8,  student.getDept().getId());
-			
-			
-			int insert = pstmt.executeUpdate();
-			
-			if(insert > 0) {
-				student = getStudent(student.getFirstName(), student.getLastName(), student.getGender(), student.getDob(), student.getCredits());
-				return student;
+		if(getStudent(student.getFirstName(), student.getLastName(), student.getGender(), student.getDob(), student.getCredits()) != null) {
+			updateStudent(getStudent(student.getFirstName(), student.getLastName(), student.getGender(), student.getDob(), student.getCredits()));
+			return getStudent(student.getFirstName(), student.getLastName(), student.getGender(), student.getDob(), student.getCredits());
+		} else {
+			try {
+				PreparedStatement pstmt = conn.prepareStatement("insert into student values(?,?,?,?,?,?,?,?)");
+
+				pstmt.setInt(1, student.getId());
+				pstmt.setString(2, student.getFirstName());
+				pstmt.setString(3, student.getLastName());
+				pstmt.setString(4, student.getGender());
+				pstmt.setDate(5, student.getDob());
+				pstmt.setInt(6, student.getCredits());
+				pstmt.setInt(7, student.getAddress().getId());
+				pstmt.setInt(8,  student.getDept().getId());
+
+
+				int insert = pstmt.executeUpdate();
+
+				if(insert > 0) {
+					student = getStudent(student.getFirstName(), student.getLastName(), student.getGender(), student.getDob(), student.getCredits());
+					return student;
+				}
+
+
+				pstmt.close();
+
+			} catch (SQLException e) {
+
+				e.printStackTrace();
 			}
-		
-		
-		pstmt.close();
-		
-	} catch (SQLException e) {
-		
-		e.printStackTrace();
-	}
+		}
 		
 		return null;
 	}

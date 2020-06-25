@@ -77,25 +77,31 @@ public class AddressDAOImp implements AddressDAO {
 
 	@Override
 	public Address addAddress(Address address) {
-		try {
-			PreparedStatement pstmt = conn.prepareStatement("insert into address values(?,?,?,?,?)");
-			
-			pstmt.setInt(1, address.getId());
-			pstmt.setString(2, address.getStreet());
-			pstmt.setString(3, address.getCity());
-			pstmt.setString(4, address.getState());
-			pstmt.setString(5, address.getZip());
-			
-			int insert = pstmt.executeUpdate();
-			
-			if(insert > 0) {
-				
-				address = getAddress(address.getStreet(), address.getCity(), address.getState(), address.getZip());
-				return address;
+		
+		if(getAddress(address.getStreet(), address.getCity(), address.getState(), address.getZip()) != null) {
+			updateAddress(getAddress(address.getStreet(), address.getCity(), address.getState(), address.getZip()));
+			return getAddress(address.getStreet(), address.getCity(), address.getState(), address.getZip());
+		} else {
+			try {
+				PreparedStatement pstmt = conn.prepareStatement("insert into address values(?,?,?,?,?)");
+
+				pstmt.setInt(1, address.getId());
+				pstmt.setString(2, address.getStreet());
+				pstmt.setString(3, address.getCity());
+				pstmt.setString(4, address.getState());
+				pstmt.setString(5, address.getZip());
+
+				int insert = pstmt.executeUpdate();
+
+				if(insert > 0) {
+
+					address = getAddress(address.getStreet(), address.getCity(), address.getState(), address.getZip());
+					return address;
+				}
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-			pstmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 		return null;
 	}

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class DepartmentDAOImp implements DepartmentDAO {
 	
@@ -108,33 +110,69 @@ public class DepartmentDAOImp implements DepartmentDAO {
 	@Override
 	public Department addDepartment(Department dept) {
 		
-		try {
-			PreparedStatement pstmt = conn.prepareStatement("insert into department values(?,?,?)");
-			
-			pstmt.setInt(1, dept.getId());
-			pstmt.setString(2, dept.getName());
-			pstmt.setString(3, dept.getPhone());
-			
-			int insert = pstmt.executeUpdate();
-			
-			if(insert > 0) {
-				dept = getDepartmentByName(dept.getName());
-				return dept;
+		if(getDepartmentByName(dept.getName()) != null) {
+			updateDepartment(getDepartmentByName(dept.getName()));
+			return getDepartmentByName(dept.getName());
+		} else {
+			try {
+				PreparedStatement pstmt = conn.prepareStatement("insert into department values(?,?,?)");
+
+				pstmt.setInt(1, dept.getId());
+				pstmt.setString(2, dept.getName());
+				pstmt.setString(3, dept.getPhone());
+
+				int insert = pstmt.executeUpdate();
+
+				if(insert > 0) {
+					dept = getDepartmentByName(dept.getName());
+					return dept;
+				}
+
+				pstmt.close();
+
+			} catch (SQLException e) {
+
+				e.printStackTrace();
 			}
-			
-			pstmt.close();
-			
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
 		}
-		
 		
 		return null;
 	}
-
+	
+	//Not used still needs fixing
 	@Override
 	public boolean deleteDepartment(int id) {
+		Department dept = getDepartmentByID(id);
+		Set<Integer> courseIds = new TreeSet<Integer>();
+		Set<Integer> courseTermIds = new TreeSet<Integer>();
+		
+		try(PreparedStatement pstmt = conn.prepareStatement("select course_id from course where dept_id = ?")) {
+
+			pstmt.setInt(1, id);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if(rs.next()) {
+				courseIds.add(rs.getInt("course_id"));
+			}
+			pstmt.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		try(PreparedStatement pstmt = conn.prepareStatement("select course_term_id from course_term where course_id = ?")) {
+
+			pstmt.setInt(1, id);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if(rs.next()) {
+				courseTermIds.add(rs.getInt("course_term_id"));
+			}
+			pstmt.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
 		
 		try(PreparedStatement pstmt = conn.prepareStatement("delete from department where dept_id = ?")) {
 			
